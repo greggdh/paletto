@@ -16,12 +16,23 @@ var Engine = function () {
         ];
 
     };
-
+    var foreach = function (n, callback) {
+        var i, j;
+        for (i = 0; i < n; i++) {
+            for (j = 0; j < n; j++) {
+                callback(i, j);
+            }
+        }
+    };
 
 // public methods
     this.isInit = function () {
+        foreach(5, function (i, j) {
+            if (board[i][j] === board[i][j + 1] || board[i][j] === board[i + 1][j]) {
+                return false;
+            }
+        });
         return true;
-
     };
     this.getCase = function (line, column) {
         return board[line][column];
