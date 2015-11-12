@@ -20,3 +20,12 @@ PalettoTestCase.prototype.testStory3 = function () {
     assertTrue(e.getCaseList(0, 5) === 1);
     assertTrue(e.getNumberToken() === 35);
 };
+
+PalettoTestCase.prototype.testStory4one = function () {
+    var e = new Engine();
+    e.move("A6");
+    e.nextPlayer();
+    assertException(function () {
+        e.move("A6");
+    }, "ExceptionBadToken");
+};
