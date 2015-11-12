@@ -47,11 +47,11 @@ var Engine = function () {
         });
         return true;
     };
-    this.getCase = function (line, column) {
-        return board[line][column];
-    };
     this.getCaseBoard = function (line, column) {
         return board[line][column];
+    };
+    this.getCaseList = function (players, colors) {
+        return tokenList[players][colors];
     };
     this.move = function (token) {
         var saveColor = null;
@@ -60,6 +60,15 @@ var Engine = function () {
         saveColor = board[line][column];
         tokenList[curPlayer][saveColor] += 1;
         board[line][column] = -1;
+    };
+    this.getNumberToken = function () {
+        var cpt = 0;
+        foreach(6, 6, function (i, j) {
+            if (board[i][j] !== -1) {
+                cpt++;
+            }
+        });
+        return cpt;
     };
     initBoard();
 };
