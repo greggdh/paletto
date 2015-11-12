@@ -37,12 +37,5 @@ var Engine = function () {
     this.getCase = function (line, column) {
         return board[line][column];
     };
-    this.getColor = function (number) {
-        var colors;
-        if (number === 0) {
-            colors = "black"
-        }
-        return colors;
-    };
     initBoard();
 };
