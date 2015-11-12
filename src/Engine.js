@@ -1,5 +1,10 @@
 'use strict';
 
+function ExceptionBadToken() {
+    "use strict";
+    this.name = "ExceptionBadToken";
+}
+
 var Engine = function () {
 
 // private attributes and methods
@@ -37,10 +42,12 @@ var Engine = function () {
         ];
 
     };
-
+    var goodToken = function (line, column) {
+        return true;
+    };
 // public methods
-    this.isInit = function () {
-        foreach(5, function (i, j) {
+    this.isInit = function () {
+        foreach(5, 5, function (i, j) {
             if (board[i][j] === board[i][j + 1] || board[i][j] === board[i + 1][j]) {
                 return false;
             }
@@ -57,9 +64,13 @@ var Engine = function () {
         var saveColor = null;
         var column = token.charCodeAt(0) - 65;
         var line = token.charCodeAt(1) - 49;
-        saveColor = board[line][column];
-        tokenList[curPlayer][saveColor] += 1;
-        board[line][column] = -1;
+        if (board[line][column] !== -1 && goodToken(line, column)) {
+            saveColor = board[line][column];
+            tokenList[curPlayer][saveColor] += 1;
+            board[line][column] = -1;
+        } else {
+            throw new ExceptionBadToken();
+        }
     };
     this.getNumberToken = function () {
         var cpt = 0;
@@ -69,6 +80,13 @@ var Engine = function () {
             }
         });
         return cpt;
+    };
+    this.nextPlayer = function () {
+        if (curPlayer === player.player1) {
+            curPlayer = player.player2;
+        } else {
+            curPlayer = player.player1;
+        }
     };
     initBoard();
 };
