@@ -42,16 +42,61 @@ var Engine = function () {
         ];
 
     };
+    var check_piece_top = function (line,column){
+        return (column !== 0);
+    };
+    var check_piece_left = function (line,column){
+        return (line !== 0);
+    };
+    var check_piece_right = function (line,column){
+        return (line !== 5);
+    };
+    var check_piece_bottom = function (line,column){
+        return (column !== 5);
+    };
+
+    var isPlayValid = function (line, column) {
+        var cpt = 0;
+        if(check_piece_top(line,column)) {
+            if (board[line][column - 1] !== -1) {
+                cpt ++;
+            }
+        }
+        if(check_piece_left(line,column)) {
+            if (board[line - 1][column] !== -1) {
+                cpt ++;
+            }
+        }
+        if(check_piece_right(line,column)) {
+            if (board[line + 1][column] !== -1) {
+                cpt ++;
+            }
+        }
+        if(check_piece_bottom(line,column)) {
+            if (board[line][column +1] !== -1) {
+                cpt ++;
+            }
+        }
+        if(cpt <= 2) {
+            return true;
+        }
+        return false;
+    };
     var goodToken = function (line, column) {
-        return true;
+
+        return isPlayValid(line, column);
     };
 // public methods
     this.isInit = function () {
-        foreach(5, 5, function (i, j) {
-            if (board[i][j] === board[i][j + 1] || board[i][j] === board[i + 1][j]) {
-                return false;
+        var i, j;
+        for (i = 0; i < 5; i++) {
+            for (j = 0; j < 5; j++) {
+                 if (board[i][j] === board[i][j + 1] || board[i][j] === board[i + 1][j]) {
+                    return false;
+
+                }
             }
-        });
+        }
         return true;
     };
     this.getCaseBoard = function (line, column) {

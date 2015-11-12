@@ -30,11 +30,9 @@ PalettoTestCase.prototype.testStory4one = function () {
     }, "ExceptionBadToken");
 };
 
-PalettoTestCase.prototype.testStory4two = function () {
+PalettoTestCase.prototype.testStory4 = function () {
     var e = new Engine();
-    e.move("A6");
-    e.nextPlayer();
     assertException(function () {
-        e.move("C3");
+        e.move("C6");
     }, "ExceptionBadToken");
 };
