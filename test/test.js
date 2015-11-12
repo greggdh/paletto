@@ -29,3 +29,12 @@ PalettoTestCase.prototype.testStory4one = function () {
         e.move("A6");
     }, "ExceptionBadToken");
 };
+
+PalettoTestCase.prototype.testStory4two = function () {
+    var e = new Engine();
+    e.move("A6");
+    e.nextPlayer();
+    assertException(function () {
+        e.move("C3");
+    }, "ExceptionBadToken");
+};
