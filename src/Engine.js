@@ -162,6 +162,9 @@ var Engine = function () {
                 winner = curPlayer;
             }
         });
+        if (getNumberTokens() === 0) {
+            winner = curPlayer;
+        }
     };
 // public methods
     this.isInit = function () {
