@@ -156,6 +156,13 @@ var Engine = function () {
         });
         return cpt;
     };
+    var checkWinner = function () {
+        foreach(2, 6, function (i, j) {
+            if (tokenList[i][j] === 6) {
+                winner = curPlayer;
+            }
+        });
+    };
 // public methods
     this.isInit = function () {
         var i, j;
@@ -182,6 +189,7 @@ var Engine = function () {
             saveColor = board[line][column];
             tokenList[curPlayer][saveColor] += 1;
             board[line][column] = -1;
+            checkWinner();
         } else {
             throw new ExceptionBadToken();
         }
@@ -202,6 +210,9 @@ var Engine = function () {
             move = list[i].charAt(0) + list[i].charAt(1);
             this.move(move);
         }
+    };
+    this.getWinner = function () {
+        return winner;
     };
     initBoard();
 };
