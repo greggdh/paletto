@@ -88,3 +88,49 @@ PalettoTestCase.prototype.testStory5 = function () {
         e.move("C3");
     }, "ExceptionBadToken");
 };
+
+PalettoTestCase.prototype.testPlayMoveList = function () {
+    var e = new Engine();
+    var moveList = "A1;A2";
+    e.playMoveList(moveList);
+    assertTrue(e.getCaseList(0, 0) === 1);
+    assertTrue(e.getCaseList(0, 5) === 1);
+    assertTrue(e.getCaseBoard(0, 0) === -1);
+    assertTrue(e.getCaseBoard(1, 0) === -1);
+};
+
+PalettoTestCase.prototype.testStory6 = function () {
+    var e = new Engine();
+    var moveList = "A1;F6";
+    e.playMoveList(moveList);
+    e.nextPlayer();
+    moveList = "B1;E6;F5";
+    e.playMoveList(moveList);
+    e.nextPlayer();
+    moveList = "A2;A6";
+    e.playMoveList(moveList);
+    e.nextPlayer();
+    e.move("A3");
+    e.nextPlayer();
+    moveList = "A5;F4;F1;C1";
+    e.playMoveList(moveList);
+    e.nextPlayer();
+    moveList = "E1;F3;D6;A4";
+    e.playMoveList(moveList);
+    e.nextPlayer();
+    moveList = "F2;B6";
+    e.playMoveList(moveList);
+    e.nextPlayer();
+    moveList = "E2;E5";
+    e.playMoveList(moveList);
+    e.nextPlayer();
+    moveList = "C6;D5;E3";
+    e.playMoveList(moveList);
+    e.nextPlayer();
+    e.move("B5");
+    e.nextPlayer();
+    e.move("B4");
+    assertTrue(e.getCaseList(0, 0) === 6);
+    assertTrue(e.getWinner() === 0);
+
+};
