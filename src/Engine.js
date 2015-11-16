@@ -8,7 +8,7 @@ function ExceptionBadToken() {
 var Engine = function () {
 
 // private attributes and methods
-    var board, tokenList, color, player, curPlayer;
+    var board, tokenList, color, player, curPlayer, winner;
     var foreach = function (n1, n2, callback) {
         var i, j;
         for (i = 0; i < n1; i++) {
@@ -31,95 +31,138 @@ var Engine = function () {
         curPlayer = player.player1;
         tokenList = new Array(2);
         initTokenList();
+        winner = -1;
         color = {black : 0, white : 1, red : 2, green : 3, blue : 4, yellow : 5};
         board = [
-            [0,3,1,4,2,1],
-            [5,1,3,2,5,4],
-            [4,5,4,1,0,2],
-            [2,0,2,3,4,1],
-            [1,3,5,0,5,3],
-            [5,4,0,2,3,0]
+            [0, 3, 1, 4, 2, 1],
+            [5, 1, 3, 2, 5, 4],
+            [4, 5, 4, 1, 0, 2],
+            [2, 0, 2, 3, 4, 1],
+            [1, 3, 5, 0, 5, 3],
+            [5, 4, 0, 2, 3, 0]
         ];
 
     };
-    var check_piece_top = function (line,column){
+    var check_piece_top = function (column) {
         return (column !== 0);
     };
-    var check_piece_left = function (line,column){
+    var check_piece_left = function (line) {
         return (line !== 0);
     };
-    var check_piece_right = function (line,column){
+    var check_piece_right = function (line) {
         return (line !== 5);
     };
-    var check_piece_bottom = function (line,column){
+    var check_piece_bottom = function (column) {
         return (column !== 5);
     };
 
     var checkNeighborLeft = function (line, column) {
-        var cpt = 0;
-        if(check_piece_top(line,column)) {
+        if (check_piece_top(column)) {
             if (board[line][column - 1] !== -1) {
-                cpt ++;
+                return {"x" : 1, "y" : true};
             }
         }
-        return cpt;
+        return {"x" : 0, y : false};
     };
     var checkNeighborTop = function (line, column) {
-        var cpt = 0;
-        if(check_piece_left(line,column)) {
+        if (check_piece_left(line)) {
             if (board[line - 1][column] !== -1) {
-                cpt ++;
+                return {"x" : 1, "y" : true};
             }
         }
-        return cpt;
+        return {"x" : 0, "y" : false};
     };
     var checkNeighborRight = function (line, column) {
-        var cpt = 0;
-        if(check_piece_bottom(line,column)) {
-            if (board[line][column +1] !== -1) {
-                cpt ++;
+        if (check_piece_bottom(column)) {
+            if (board[line][column + 1] !== -1) {
+                return {"x" : 1, "y" : true};
             }
         }
-        return cpt;
+        return {"x" : 0, "y" : false};
     };
     var checkNeighborLow = function (line, column) {
-        var cpt = 0;
-        if(check_piece_right(line,column)) {
+        if (check_piece_right(line)) {
             if (board[line + 1][column] !== -1) {
-                cpt ++;
+                return {"x" : 1, "y" : true};
             }
         }
-        return cpt;
+        return {"x" : 0, "y" : false};
     };
-
-    var checkNumberNeighbor = function (line, column) {
-        var cpt = 0;
-        cpt = checkNeighborLow(line, column) + checkNeighborRight(line, column);
-        cpt = cpt + checkNeighborTop(line, column) + checkNeighborLeft(line, column);
-        return cpt;
-    };
-    var checkTypeNeighbor = function (line, column) {
+    var checkTop = function (line, column, tt, tl, tr) {
+        if (tt && tl && board[line - 1][column - 1] === -1) {
+            return false;
+        }
+        if (tt && tr && board[line + 1][column - 1] === -1) {
+            return false;
+        }
         return true;
     };
+    var checkLow = function (line, column, tl, tb, tr) {
+        if (tb && tl && board[line - 1][column + 1] === -1 ){
+            return false;
+        }
+        if (tb && tr && board[line + 1][column + 1] === -1) {
+            return false;
+        }
+        return true;
+    };
+    var checkCross = function (tt, tl, tb, tr) {
+        if (tt && tb && !tl && !tr) {
+            return false;
+        }
+        if (tl && tr && !tt && !tb) {
+            return false;
+        }
+        return true;
+    };
+    var checkTypeNeighbor = function (line, column, tt, tl, tb, tr) {
+        var top, low, cross;
+        top = checkTop(line, column, tt, tl, tr);
+        low = checkLow(line, column, tl, tb, tr);
+        cross = checkCross(tt, tl, tb, tr);
+        if (top && low && cross) {
+            return true;
+        }
+        return false;
+    };
     var goodToken = function (line, column) {
-        var cpt = checkNumberNeighbor(line, column);
-        if (cpt < 1) {
+        var cpt = 0, t, l, b, r;
+        cpt = checkNeighborLow(line, column).x + checkNeighborRight(line, column).x;
+        cpt = cpt + checkNeighborTop(line, column).x + checkNeighborLeft(line, column).x;
+        t = checkNeighborLeft(line, column).y;
+        l = checkNeighborTop(line, column).y;
+        b = checkNeighborRight(line, column).y;
+        r = checkNeighborLow(line, column).y;
+        if (cpt <= 1) {
             return true;
         }
         if (cpt === 2) {
-            return checkTypeNeighbor (line, column);
+            return checkTypeNeighbor(line, column, t, l, b, r);
         }
         return false;
-
+    };
+    var testIsInit = function (i, j) {
+        if (board[i][j] === board[i][j + 1] || board[i][j] === board[i + 1][j]) {
+            return false;
+        }
+        return true;
+    };
+    var getNumberTokens = function () {
+        var cpt = 0;
+        foreach(6, 6, function (i, j) {
+            if (board[i][j] !== -1) {
+                cpt++;
+            }
+        });
+        return cpt;
     };
 // public methods
     this.isInit = function () {
         var i, j;
         for (i = 0; i < 5; i++) {
             for (j = 0; j < 5; j++) {
-                 if (board[i][j] === board[i][j + 1] || board[i][j] === board[i + 1][j]) {
+                if (!testIsInit(i, j)) {
                     return false;
-
                 }
             }
         }
@@ -144,13 +187,7 @@ var Engine = function () {
         }
     };
     this.getNumberToken = function () {
-        var cpt = 0;
-        foreach(6, 6, function (i, j) {
-            if (board[i][j] !== -1) {
-                cpt++;
-            }
-        });
-        return cpt;
+        return getNumberTokens();
     };
     this.nextPlayer = function () {
         if (curPlayer === player.player1) {
