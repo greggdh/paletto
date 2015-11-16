@@ -196,5 +196,12 @@ var Engine = function () {
             curPlayer = player.player1;
         }
     };
+    this.playMoveList = function (baseList) {
+        var list = baseList.split(";"), i, move;
+        for (i = 0; i < list.length; i++) {
+            move = list[i].charAt(0) + list[i].charAt(1);
+            this.move(move);
+        }
+    };
     initBoard();
 };
