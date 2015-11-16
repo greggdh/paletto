@@ -32,7 +32,59 @@ PalettoTestCase.prototype.testStory4one = function () {
 
 PalettoTestCase.prototype.testStory4 = function () {
     var e = new Engine();
+    e.move("A1");
+    e.move("A2");
+    e.move("A3");
+    e.move("B1");
+    e.move("B2");
+    e.move("B3");
+    e.move("C1");
+    e.move("C2");
+    e.move("A6");
+    e.move("A5");
+    e.move("B6");
+    e.move("F6");
+    e.move("F5");
+    e.move("F4");
+    e.move("F3");
+    e.move("F2");
+    e.move("E6");
+    e.move("E5");
+    e.move("E4");
+    e.move("D6");
+    e.move("D5");
+    e.move("D4");
+    e.nextPlayer();
+    e.move("E3");
+    e.move("C6");
+    assertTrue(e.getCaseList(1, 0) === 2);
+};
+
+PalettoTestCase.prototype.testStory5 = function () {
+    var e = new Engine();
+    e.move("A1");
+    e.move("A2");
+    e.move("A3");
+    e.move("B1");
+    e.move("B2");
+    e.move("B3");
+    e.move("C1");
+    e.move("C2");
+    e.move("A6");
+    e.move("A5");
+    e.move("B6");
+    e.move("F6");
+    e.move("F5");
+    e.move("F4");
+    e.move("F3");
+    e.move("F2");
+    e.move("E6");
+    e.move("E5");
+    e.move("E4");
+    e.move("D6");
+    e.move("D5");
+    e.move("D4");
     assertException(function () {
-        e.move("C6");
+        e.move("C3");
     }, "ExceptionBadToken");
 };

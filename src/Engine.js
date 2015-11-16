@@ -55,36 +55,62 @@ var Engine = function () {
         return (column !== 5);
     };
 
-    var isPlayValid = function (line, column) {
+    var checkNeighborLeft = function (line, column) {
         var cpt = 0;
         if(check_piece_top(line,column)) {
             if (board[line][column - 1] !== -1) {
                 cpt ++;
             }
         }
+        return cpt;
+    };
+    var checkNeighborTop = function (line, column) {
+        var cpt = 0;
         if(check_piece_left(line,column)) {
             if (board[line - 1][column] !== -1) {
                 cpt ++;
             }
         }
-        if(check_piece_right(line,column)) {
-            if (board[line + 1][column] !== -1) {
-                cpt ++;
-            }
-        }
+        return cpt;
+    };
+    var checkNeighborRight = function (line, column) {
+        var cpt = 0;
         if(check_piece_bottom(line,column)) {
             if (board[line][column +1] !== -1) {
                 cpt ++;
             }
         }
-        if(cpt <= 2) {
-            return true;
+        return cpt;
+    };
+    var checkNeighborLow = function (line, column) {
+        var cpt = 0;
+        if(check_piece_right(line,column)) {
+            if (board[line + 1][column] !== -1) {
+                cpt ++;
+            }
         }
-        return false;
+        return cpt;
+    };
+
+    var checkNumberNeighbor = function (line, column) {
+        var cpt = 0;
+        cpt = checkNeighborLow(line, column) + checkNeighborRight(line, column);
+        cpt = cpt + checkNeighborTop(line, column) + checkNeighborLeft(line, column);
+        return cpt;
+    };
+    var checkTypeNeighbor = function (line, column) {
+        return true;
     };
     var goodToken = function (line, column) {
+        var cpt = checkNumberNeighbor(line, column);
+        if (cpt < 1) {
+            return true;
+        }
+        if (cpt === 2) {
+            return checkTypeNeighbor (line, column);
+        }
+        return false;
 
-        return isPlayValid(line, column);
     };
 // public methods
     this.isInit = function () {
