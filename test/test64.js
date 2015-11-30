@@ -7,7 +7,7 @@ PalettoTestCase64.prototype.testStory8 = function () {
     assertTrue(e.isInit());
 };
 
-Paletto64TestCase.prototype.testStory9 = function () {
+PalettoTestCase64.prototype.testStory9 = function () {
     var e = new Engine();
     e.moveAll("A1");
     e.nextPlayer();

@@ -166,6 +166,15 @@ var Engine = function () {
             winner = curPlayer;
         }
     };
+    var takeAllToken = function (saveColor) {
+        foreach(6, 6, function (i, j) {
+            if (board[i][j] === saveColor && goodToken(i, j)){
+                tokenList[curPlayer][saveColor] += 1;
+                board[i][j] = -1;
+                checkWinner();
+            }
+        });
+    };
 // public methods
     this.isInit = function () {
         var i, j;
@@ -197,6 +206,20 @@ var Engine = function () {
             throw new ExceptionBadToken();
         }
     };
+    this.moveAll = function (token) {
+        var saveColor = null;
+        var column = token.charCodeAt(0) - 65;
+        var line = token.charCodeAt(1) - 49;
+        if (board[line][column] !== -1 && goodToken(line, column)) {
+            saveColor = board[line][column];
+            tokenList[curPlayer][saveColor] += 1;
+            board[line][column] = -1;
+            checkWinner();
+            takeAllToken(saveColor);
+        } else {
+            throw new ExceptionBadToken();
+        }
+    };
     this.getNumberToken = function () {
         return getNumberTokens();
     };
@@ -217,5 +240,6 @@ var Engine = function () {
     this.getWinner = function () {
         return winner;
     };
+
     initBoard();
 };
