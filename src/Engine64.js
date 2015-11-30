@@ -8,7 +8,7 @@ function ExceptionBadToken() {
 var Engine64 = function () {
 
 // private attributes and methods
-    var board, tokenList, color, player, curPlayer, winner;
+    var board, tokenList, color, player, curPlayer, winner, saveBoard;
     var foreach = function (n1, n2, callback) {
         var i, j;
         for (i = 0; i < n1; i++) {
@@ -19,29 +19,32 @@ var Engine64 = function () {
     };
     var initTokenList = function () {
         var k;
-        for (k = 0; k < 6; k++) {
-            tokenList[k] = new Array (6);
+        for (k = 0; k < 8; k++) {
+            tokenList[k] = new Array (8);
         }
-        foreach(2, 6, function (i, j) {
+        foreach(2, 8, function (i, j) {
             tokenList[i][j] = 0;
         });
     };
-    var initBoard = function () {
-        player = {player1 : 0, player2 : 1};
-        curPlayer = player.player1;
-        tokenList = new Array(2);
-        initTokenList();
-        winner = -1;
-        color = {black : 0, white : 1, red : 2, green : 3, blue : 4, yellow : 5};
-        board = [
-            [0, 3, 1, 4, 2, 1],
-            [5, 1, 3, 2, 5, 4],
-            [4, 5, 4, 1, 0, 2],
-            [2, 0, 2, 3, 4, 1],
-            [1, 3, 5, 0, 5, 3],
-            [5, 4, 0, 2, 3, 0]
-        ];
-
+    var initSaveBoard = function () {
+        var k;
+        saveBoard = [];
+        for (k = 0; k < 8; k++) {
+            saveBoard[k] = 8;
+        }
+    };
+    var initBoardEmpty = function () {
+        var k;
+        board = [];
+        for (k = 0; k < 8; k++) {
+            board[k] = new Array (8);
+        }
+        foreach(8, 8, function (i, j) {
+            board[i][j] = -1;
+        });
+    };
+    var generateRandomNumber = function () {
+        return Math.floor(Math.random() * 8);
     };
     var check_piece_top = function (column) {
         return (column !== 0);
@@ -50,12 +53,67 @@ var Engine64 = function () {
         return (line !== 0);
     };
     var check_piece_right = function (line) {
-        return (line !== 5);
+        return (line !== 7);
     };
     var check_piece_bottom = function (column) {
-        return (column !== 5);
+        return (column !== 7);
+    };
+    var checkGoodToken = function (number, line, column){
+        if (saveBoard[number] <= 0) {
+            return false;
+        }
+        if (check_piece_top(column)) {
+            if (board[line][column - 1] === number) {
+                return false;
+            }
+        }
+        if (check_piece_left(line)) {
+            if (board[line - 1][column] === number) {
+                return false;
+            }
+        }
+        if (check_piece_right(line)) {
+            if (board[line + 1][column] === number) {
+                return false;
+            }
+        }
+        if (check_piece_bottom(column)) {
+            if (board[line][column + 1] === number) {
+                return false;
+            }
+        }
+        saveBoard[number]--;
+        return true;
     };
 
+    var generateRandomBoard = function () {
+        initSaveBoard();
+        initBoardEmpty();
+        var i, j, number, cpt;
+        for (i = 0; i < 8; i++) {
+            for (j = 0; j < 8; j++) {
+                cpt = 0;
+                do {
+                    if (cpt > 100) {
+                        return false;
+                    }
+                    number = generateRandomNumber();
+                    cpt++;
+                } while (!checkGoodToken(number, i, j));
+                board[i][j] = number;
+            }
+        }
+        return true;
+    };
+    var initBoard = function () {
+        player = {player1 : 0, player2 : 1};
+        curPlayer = player.player1;
+        tokenList = new Array(2);
+        initTokenList();
+        winner = -1;
+        color = {black : 0, white : 1, red : 2, green : 3, blue : 4, yellow : 5, pink : 6, cyan : 7 };
+        while (!generateRandomBoard()) {}
+    };
     var checkNeighborLeft = function (line, column) {
         if (check_piece_top(column)) {
             if (board[line][column - 1] !== -1) {
@@ -98,7 +156,7 @@ var Engine64 = function () {
         return true;
     };
     var checkLow = function (line, column, tl, tb, tr) {
-        if (tb && tl && board[line - 1][column + 1] === -1 ){
+        if (tb && tl && board[line - 1][column + 1] === -1 ) {
             return false;
         }
         if (tb && tr && board[line + 1][column + 1] === -1) {
@@ -149,16 +207,17 @@ var Engine64 = function () {
     };
     var getNumberTokens = function () {
         var cpt = 0;
-        foreach(6, 6, function (i, j) {
+        foreach(8, 8, function (i, j) {
             if (board[i][j] !== -1) {
                 cpt++;
             }
         });
+        console.log(cpt);
         return cpt;
     };
     var checkWinner = function () {
-        foreach(2, 6, function (i, j) {
-            if (tokenList[i][j] === 6) {
+        foreach(2, 8, function (i, j) {
+            if (tokenList[i][j] === 8) {
                 winner = curPlayer;
             }
         });
@@ -166,11 +225,20 @@ var Engine64 = function () {
             winner = curPlayer;
         }
     };
+    var takeAllToken = function (saveColor) {
+        foreach(8, 8, function (i, j) {
+            if (board[i][j] === saveColor && goodToken(i, j)) {
+                tokenList[curPlayer][saveColor] += 1;
+                board[i][j] = -1;
+                checkWinner();
+            }
+        });
+    };
 // public methods
     this.isInit = function () {
         var i, j;
-        for (i = 0; i < 5; i++) {
-            for (j = 0; j < 5; j++) {
+        for (i = 0; i < 7; i++) {
+            for (j = 0; j < 7; j++) {
                 if (!testIsInit(i, j)) {
                     return false;
                 }
@@ -193,6 +261,20 @@ var Engine64 = function () {
             tokenList[curPlayer][saveColor] += 1;
             board[line][column] = -1;
             checkWinner();
+        } else {
+            throw new ExceptionBadToken();
+        }
+    };
+    this.moveAll = function (token) {
+        var saveColor = null;
+        var column = token.charCodeAt(0) - 65;
+        var line = token.charCodeAt(1) - 49;
+        if (board[line][column] !== -1 && goodToken(line, column)) {
+            saveColor = board[line][column];
+            tokenList[curPlayer][saveColor] += 1;
+            board[line][column] = -1;
+            checkWinner();
+            takeAllToken(saveColor);
         } else {
             throw new ExceptionBadToken();
         }
